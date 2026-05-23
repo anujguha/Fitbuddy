@@ -21,6 +21,48 @@ class WorkoutProvider extends ChangeNotifier {
     loadWorkouts();
   }
 
+  Future<void> toggleSetCompletion(
+    String day,
+    int exerciseIndex,
+    int setIndex,
+  ) async {
+    final workoutDay = _weeklyWorkout.firstWhere(
+      (element) => element.day == day,
+    );
+
+    final exercise = workoutDay.exercises[exerciseIndex];
+
+    exercise.completedSets[setIndex] = !exercise.completedSets[setIndex];
+
+    exercise.completed = exercise.completedSets.every((set) => set);
+
+    await saveWorkouts();
+
+    notifyListeners();
+  }
+
+  int getTotalSets(String day) {
+    final workoutDay = _weeklyWorkout.firstWhere(
+      (element) => element.day == day,
+    );
+
+    return workoutDay.exercises.fold(0, (sum, exercise) => sum + exercise.sets);
+  }
+
+  int getCompletedSets(String day) {
+    final workoutDay = _weeklyWorkout.firstWhere(
+      (element) => element.day == day,
+    );
+
+    int completed = 0;
+
+    for (var exercise in workoutDay.exercises) {
+      completed += exercise.completedSets.where((set) => set).length;
+    }
+
+    return completed;
+  }
+
   Future<void> loadWorkouts() async {
     final data = HiveService.getWorkoutData();
 
@@ -39,6 +81,8 @@ class WorkoutProvider extends ChangeNotifier {
 
     for (var exercise in workoutDay.exercises) {
       exercise.completed = false;
+
+      exercise.completedSets = List.generate(exercise.sets, (_) => false);
     }
 
     await saveWorkouts();

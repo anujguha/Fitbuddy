@@ -22,13 +22,14 @@ class ExerciseAdapter extends TypeAdapter<Exercise> {
       reps: fields[2] as int,
       weight: fields[3] as double,
       completed: fields[4] as bool,
+      completedSets: (fields[5] as List?)?.cast<bool>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Exercise obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class ExerciseAdapter extends TypeAdapter<Exercise> {
       ..writeByte(3)
       ..write(obj.weight)
       ..writeByte(4)
-      ..write(obj.completed);
+      ..write(obj.completed)
+      ..writeByte(5)
+      ..write(obj.completedSets);
   }
 
   @override

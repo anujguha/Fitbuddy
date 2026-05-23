@@ -19,11 +19,18 @@ class Exercise extends HiveObject {
   @HiveField(4)
   bool completed;
 
+  // NEW
+  @HiveField(5)
+  List<bool> completedSets;
+
   Exercise({
     required this.name,
     required this.sets,
     required this.reps,
     required this.weight,
     this.completed = false,
-  });
+    List<bool>? completedSets,
+  }) : completedSets = completedSets ?? List.generate(sets, (_) => false);
+
+  int get completedSetCount => completedSets.where((set) => set).length;
 }

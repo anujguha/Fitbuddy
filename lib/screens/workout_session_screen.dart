@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/workout_provider.dart';
+import '../widgets/set_tile.dart';
 
 class WorkoutSessionScreen extends StatelessWidget {
   final String day;
@@ -16,15 +17,11 @@ class WorkoutSessionScreen extends StatelessWidget {
       (element) => element.day == day,
     );
 
-    final totalExercises = workoutDay.exercises.length;
+    final totalSets = workoutProvider.getTotalSets(day);
 
-    final completedExercises = workoutDay.exercises
-        .where((exercise) => exercise.completed)
-        .length;
+    final completedSets = workoutProvider.getCompletedSets(day);
 
-    final progress = totalExercises == 0
-        ? 0.0
-        : completedExercises / totalExercises;
+    final progress = totalSets == 0 ? 0.0 : completedSets / totalSets;
 
     return Scaffold(
       appBar: AppBar(title: Text('$day Session')),
@@ -62,7 +59,7 @@ class WorkoutSessionScreen extends StatelessWidget {
                   const SizedBox(height: 18),
 
                   Text(
-                    '$completedExercises / $totalExercises Exercises Completed',
+                    '$completedSets / $totalSets Sets Completed',
 
                     style: const TextStyle(fontSize: 16),
                   ),
@@ -84,65 +81,82 @@ class WorkoutSessionScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            const Text(
-              'Live Workout',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 16),
-
             Expanded(
               child: ListView.builder(
                 itemCount: workoutDay.exercises.length,
 
-                itemBuilder: (context, index) {
-                  final exercise = workoutDay.exercises[index];
+                itemBuilder: (context, exerciseIndex) {
+                  final exercise = workoutDay.exercises[exerciseIndex];
 
                   return Container(
-                    margin: const EdgeInsets.only(bottom: 16),
+                    margin: const EdgeInsets.only(bottom: 18),
 
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(18),
 
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E293B),
 
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(24),
                     ),
 
-                    child: Row(
-                      children: [
-                        Checkbox(
-                          value: exercise.completed,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
 
-                          onChanged: (_) {
-                            workoutProvider.toggleExercise(day, index);
-                          },
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+
+                                children: [
+                                  Text(
+                                    exercise.name,
+
+                                    style: const TextStyle(
+                                      fontSize: 20,
+
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 6),
+
+                                  Text(
+                                    '${exercise.sets} Sets • ${exercise.reps} Reps • ${exercise.weight} KG',
+
+                                    style: const TextStyle(color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            if (exercise.completed)
+                              const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                              ),
+                          ],
                         ),
 
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: 20),
 
-                            children: [
-                              Text(
-                                exercise.name,
+                        Wrap(
+                          children: List.generate(exercise.sets, (setIndex) {
+                            return SetTile(
+                              setNumber: setIndex + 1,
 
-                                style: const TextStyle(
-                                  fontSize: 18,
+                              completed: exercise.completedSets[setIndex],
 
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-
-                              const SizedBox(height: 6),
-
-                              Text(
-                                '${exercise.sets} Sets • ${exercise.reps} Reps • ${exercise.weight} KG',
-
-                                style: const TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
+                              onTap: () {
+                                workoutProvider.toggleSetCompletion(
+                                  day,
+                                  exerciseIndex,
+                                  setIndex,
+                                );
+                              },
+                            );
+                          }),
                         ),
                       ],
                     ),
@@ -167,7 +181,7 @@ class WorkoutSessionScreen extends StatelessWidget {
                         title: const Text('Workout Complete'),
 
                         content: Text(
-                          'You completed $completedExercises out of $totalExercises exercises.',
+                          'You completed $completedSets out of $totalSets sets.',
                         ),
 
                         actions: [
