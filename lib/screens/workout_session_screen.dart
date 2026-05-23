@@ -6,118 +6,76 @@ import '../providers/workout_provider.dart';
 class WorkoutSessionScreen extends StatelessWidget {
   final String day;
 
-  const WorkoutSessionScreen({
-    super.key,
-    required this.day,
-  });
+  const WorkoutSessionScreen({super.key, required this.day});
 
   @override
   Widget build(BuildContext context) {
-    final workoutProvider =
-        Provider.of<WorkoutProvider>(
-      context,
+    final workoutProvider = Provider.of<WorkoutProvider>(context);
+
+    final workoutDay = workoutProvider.weeklyWorkout.firstWhere(
+      (element) => element.day == day,
     );
 
-    final workoutDay = workoutProvider
-        .weeklyWorkout
-        .firstWhere(
-          (element) => element.day == day,
-        );
+    final totalExercises = workoutDay.exercises.length;
 
-    final totalExercises =
-        workoutDay.exercises.length;
-
-    final completedExercises =
-        workoutDay.exercises
-            .where(
-              (exercise) =>
-                  exercise.completed,
-            )
-            .length;
+    final completedExercises = workoutDay.exercises
+        .where((exercise) => exercise.completed)
+        .length;
 
     final progress = totalExercises == 0
         ? 0.0
-        : completedExercises /
-            totalExercises;
+        : completedExercises / totalExercises;
 
     return Scaffold(
-      appBar: AppBar(
-        title:
-            Text('$day Session'),
-      ),
+      appBar: AppBar(title: Text('$day Session')),
 
       body: Padding(
-        padding:
-            const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
 
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
 
           children: [
             Container(
               width: double.infinity,
 
-              padding:
-                  const EdgeInsets.all(
-                      20),
+              padding: const EdgeInsets.all(20),
 
               decoration: BoxDecoration(
-                gradient:
-                    const LinearGradient(
-                  colors: [
-                    Color(0xFF2563EB),
-                    Color(0xFF1D4ED8),
-                  ],
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
                 ),
 
-                borderRadius:
-                    BorderRadius.circular(
-                        24),
+                borderRadius: BorderRadius.circular(24),
               ),
 
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment
-                        .start,
+                crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
                   const Text(
                     'Workout Progress',
 
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight:
-                          FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
 
-                  const SizedBox(
-                      height: 18),
+                  const SizedBox(height: 18),
 
                   Text(
                     '$completedExercises / $totalExercises Exercises Completed',
 
-                    style:
-                        const TextStyle(
-                      fontSize: 16,
-                    ),
+                    style: const TextStyle(fontSize: 16),
                   ),
 
-                  const SizedBox(
-                      height: 18),
+                  const SizedBox(height: 18),
 
                   ClipRRect(
-                    borderRadius:
-                        BorderRadius
-                            .circular(12),
+                    borderRadius: BorderRadius.circular(12),
 
-                    child:
-                        LinearProgressIndicator(
+                    child: LinearProgressIndicator(
                       value: progress,
                       minHeight: 10,
-                      backgroundColor:
-                          Colors.white24,
+                      backgroundColor: Colors.white24,
                     ),
                   ),
                 ],
@@ -128,98 +86,60 @@ class WorkoutSessionScreen extends StatelessWidget {
 
             const Text(
               'Live Workout',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight:
-                    FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 16),
 
             Expanded(
               child: ListView.builder(
-                itemCount:
-                    workoutDay
-                        .exercises.length,
+                itemCount: workoutDay.exercises.length,
 
-                itemBuilder:
-                    (context, index) {
-                  final exercise =
-                      workoutDay
-                          .exercises[index];
+                itemBuilder: (context, index) {
+                  final exercise = workoutDay.exercises[index];
 
                   return Container(
-                    margin:
-                        const EdgeInsets
-                            .only(
-                            bottom: 16),
+                    margin: const EdgeInsets.only(bottom: 16),
 
-                    padding:
-                        const EdgeInsets
-                            .all(16),
+                    padding: const EdgeInsets.all(16),
 
-                    decoration:
-                        BoxDecoration(
-                      color:
-                          const Color(
-                              0xFF1E293B),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E293B),
 
-                      borderRadius:
-                          BorderRadius
-                              .circular(
-                                  20),
+                      borderRadius: BorderRadius.circular(20),
                     ),
 
                     child: Row(
                       children: [
                         Checkbox(
-                          value: exercise
-                              .completed,
+                          value: exercise.completed,
 
                           onChanged: (_) {
-                            workoutProvider
-                                .toggleExercise(
-                              day,
-                              index,
-                            );
+                            workoutProvider.toggleExercise(day, index);
                           },
                         ),
 
                         Expanded(
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment
-                                    .start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
 
                             children: [
                               Text(
                                 exercise.name,
 
-                                style:
-                                    const TextStyle(
-                                  fontSize:
-                                      18,
+                                style: const TextStyle(
+                                  fontSize: 18,
 
-                                  fontWeight:
-                                      FontWeight
-                                          .bold,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
 
-                              const SizedBox(
-                                  height:
-                                      6),
+                              const SizedBox(height: 6),
 
                               Text(
                                 '${exercise.sets} Sets • ${exercise.reps} Reps • ${exercise.weight} KG',
 
-                                style:
-                                    const TextStyle(
-                                  color:
-                                      Colors
-                                          .grey,
-                                ),
+                                style: const TextStyle(color: Colors.grey),
                               ),
                             ],
                           ),
@@ -236,63 +156,48 @@ class WorkoutSessionScreen extends StatelessWidget {
               height: 58,
 
               child: ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
+                onPressed: () async {
+                  await workoutProvider.resetWorkout(day);
 
-                    builder: (_) =>
-                        AlertDialog(
-                      title: const Text(
-                        'Workout Complete',
-                      ),
+                  if (context.mounted) {
+                    showDialog(
+                      context: context,
 
-                      content:
-                          Text(
-                        'You completed $completedExercises out of $totalExercises exercises.',
-                      ),
+                      builder: (_) => AlertDialog(
+                        title: const Text('Workout Complete'),
 
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(
-                                context);
-
-                            Navigator.pop(
-                                context);
-                          },
-
-                          child:
-                              const Text(
-                            'Finish',
-                          ),
+                        content: Text(
+                          'You completed $completedExercises out of $totalExercises exercises.',
                         ),
-                      ],
-                    ),
-                  );
+
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+
+                              Navigator.pop(context);
+                            },
+
+                            child: const Text('Finish'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 },
 
-                style:
-                    ElevatedButton
-                        .styleFrom(
-                  backgroundColor:
-                      const Color(
-                          0xFF2563EB),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2563EB),
 
-                  shape:
-                      RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius
-                            .circular(
-                                18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
                   ),
                 ),
 
                 child: const Text(
                   'Complete Workout',
 
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ),

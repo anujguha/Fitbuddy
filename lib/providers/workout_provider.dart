@@ -32,6 +32,24 @@ class WorkoutProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> resetWorkout(String day) async {
+    final workoutDay = _weeklyWorkout.firstWhere(
+      (element) => element.day == day,
+    );
+
+    for (var exercise in workoutDay.exercises) {
+      exercise.completed = false;
+    }
+
+    await saveWorkouts();
+
+    notifyListeners();
+  }
+
+  Future<void> startWorkout(String day) async {
+    await resetWorkout(day);
+  }
+
   Future<void> saveWorkouts() async {
     await HiveService.saveWorkoutData(_weeklyWorkout);
   }

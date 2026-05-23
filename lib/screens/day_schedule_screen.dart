@@ -83,13 +83,27 @@ class DayScheduleScreen extends StatelessWidget {
                     height: 52,
 
                     child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => WorkoutSessionScreen(day: day),
-                          ),
-                        );
+                      onPressed: () async {
+                        if (workoutDay.exercises.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Add exercises first'),
+                            ),
+                          );
+
+                          return;
+                        }
+
+                        await workoutProvider.startWorkout(day);
+
+                        if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => WorkoutSessionScreen(day: day),
+                            ),
+                          );
+                        }
                       },
 
                       icon: const Icon(Icons.play_arrow),

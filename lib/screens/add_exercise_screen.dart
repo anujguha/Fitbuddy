@@ -119,6 +119,19 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                 controller: setsController,
                 keyboardType: TextInputType.number,
                 decoration: fieldDecoration('Sets'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Enter sets';
+                  }
+
+                  final sets = int.tryParse(value);
+
+                  if (sets == null || sets <= 0) {
+                    return 'Invalid sets';
+                  }
+
+                  return null;
+                },
               ),
 
               const SizedBox(height: 18),
@@ -127,6 +140,19 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                 controller: repsController,
                 keyboardType: TextInputType.number,
                 decoration: fieldDecoration('Reps'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Enter reps';
+                  }
+
+                  final reps = int.tryParse(value);
+
+                  if (reps == null || reps <= 0) {
+                    return 'Invalid reps';
+                  }
+
+                  return null;
+                },
               ),
 
               const SizedBox(height: 18),
@@ -135,6 +161,19 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                 controller: weightController,
                 keyboardType: TextInputType.number,
                 decoration: fieldDecoration('Weight (KG)'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Enter weight';
+                  }
+
+                  final weight = double.tryParse(value);
+
+                  if (weight == null || weight < 0) {
+                    return 'Invalid weight';
+                  }
+
+                  return null;
+                },
               ),
 
               const SizedBox(height: 30),
